@@ -4,7 +4,6 @@ const config = require('../config.json');
 class tools {
     playMusic = async (servers, msg) => {
         if (servers.server.playingNow === false) {
-
             const playing = await servers.server.fila.values().next().value;
             servers.server.playingNow = true;
             servers.server.dispatcher = servers.server.connection.play(ytdl(playing.id, config.YTDL));

@@ -7,6 +7,9 @@ const ytpl = require('ytpl');
 const google = require("googleapis");
 
 const tools = require('../tools/tools');
+const utils = require('../utils/utils');
+
+const prefixo = process.env.PREFIX;
 
 const youtube = new google.youtube_v3.Youtube({
     version: 'v3',
@@ -25,29 +28,22 @@ class commands {
     }
 
     leave = async (servers, msg) => {
-        this.stop(servers);
-        servers.server.fila.clear();
         servers.server.connection = null;
         servers.server.dispatcher = null;
+        servers.server.playingNow = false;
+        servers.server.fila.clear();
         msg.member.voice.channel.leave();
     }
 
     play = async (servers, msg) => {
         let whatToPlay = msg.content.slice(4);
 
-        if (whatToPlay.length === 0) {
-            msg.channel.send('Digita algo misera');
+        if (whatToPlay.length === 0 || whatToPlay === '') {
+            msg.channel.send(await utils.embed('Digita algo misera!', ''));
+            return;
         }
 
-        if (servers.server.connection === null) {
-            try {
-                servers.server.connection = await msg.member.voice.channel.join();
-            }
-            catch (err) {
-                console.log('ERRO AO ENTRAR NO CANAL DE VOZ, QUE MERDA ACONTECEU?');
-                console.log(err);
-            }
-        }
+        utils.checkConnection(servers, msg);
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
@@ -124,17 +120,24 @@ class commands {
         let whatToPlay = msg.content.slice(4);
 
         if (whatToPlay.length === 0) {
-            msg.channel.send('Digita algo misera');
+            msg.channel.send(utils.embed('Digita algo misera!', ''));
         }
 
-        if (servers.server.connection === null) {
-            try {
-                servers.server.connection = await msg.member.voice.channel.join();
-            }
-            catch (err) {
-                console.log('ERRO AO ENTRAR NO CANAL DE VOZ, QUE MERDA ACONTECEU?');
-                console.log(err);
-            }
+        utils.checkConnection(servers, msg);
+
+        if (ytpl.validateID(whatToPlay)) {
+            let playList = await ytpl(whatToPlay);
+
+            await playList.items.forEach((values) => {
+                servers.server.fila.set(values.title, {
+                    id: values.id,
+                    title: values.title,
+                    channel: values.author.name
+                })
+            });
+
+            tools.playMusic(servers, msg);
+            return;
         }
 
         if (ytdl.validateURL(whatToPlay)) {
@@ -200,22 +203,25 @@ class commands {
                                     && user.id === msg.author.id;
                             }
 
-                            embedMessage.awaitReactions(filter, { max: 1, time: 40000, errors: ['time'] })
+                            embedMessage.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
                                 .then((collected) => {
                                     const reaction = collected.first();
                                     const idOptionSelected = reactsEmojis.indexOf(reaction.emoji.name);
-                                    msg.channel.send(`Você escolheu ${listResults[idOptionSelected].tituloVideo} 
-                                de ${listResults[idOptionSelected].nomeCanal}`)
+                                    msg.channel.send(utils.embed(
+                                        `Você escolheu ${listResults[idOptionSelected].tituloVideo}`,
+                                        `${listResults[idOptionSelected].nomeCanal}`
+                                    ));
 
                                     servers.server.fila.set(listResults[idOptionSelected].tituloVideo, {
                                         id: listResults[idOptionSelected].id,
                                         title: listResults[idOptionSelected].tituloVideo,
                                         channel: listResults[idOptionSelected].nomeCanal
                                     });
+
                                     tools.playMusic(servers, msg);
 
                                 }).catch((error) => {
-                                    msg.reply('Você não escolheu porra nenhuma por que?!');
+                                    msg.channel.send(utils.embed('Você não escolheu porra nenhuma por que?!', ''));
                                     console.log(error);
                                 });
                         });
@@ -240,18 +246,15 @@ class commands {
 
     skip = async (servers, msg) => {
         if (!msg.member.voice.channel) {
-            msg.channel.send("Entre em um canal de voz misera!");
+            msg.channel.send(utils.embed('Entre em um canal de voz misera!', ''));
             return;
         } else {
             if (servers.server.fila.size <= 1) {
-                this.stop(servers);
-                servers.server.fila.clear();
+                this.leave(servers, msg);
             } else {
                 servers.server.playingNow = false;
                 let playingNow = servers.server.fila.values().next().value;
                 servers.server.fila.delete(playingNow.title)
-
-                this.queue(servers, msg);
 
                 tools.playMusic(servers, msg);
             }
@@ -259,31 +262,22 @@ class commands {
     }
 
     queue = async (servers, msg) => {
-        let size = servers.server.fila.size;
-        let i = 1;
-
-        if (size < 1) {
-            msg.channel.send(
-                new Discord.MessageEmbed()
-                    .setColor([111, 20, 113])
-                    .setAuthor('GroovyJR')
-                    .setTitle('Nenhuma musica na fila de reprodução!')
-            );
-
+        if (servers.server.fila.size < 1) {
+            msg.channel.send(utils.embed('Nenhuma musica na fila de reprodução!', ''));
             return;
         }
 
         let array = [];
-        let position = 1;
+        let i = 1;
 
         await servers.server.fila.forEach((values) => {
             array.push({
-                name: `${position}:  ${values.title} ${position === 1 ? '[TOCANDO AGORA]' : ''}`,
+                name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
                 value: values.channel,
                 inline: false
             });
-            position++
-        })
+            i++
+        });
 
         const separar = (list, limit) => {
             var originalList = [];
@@ -308,19 +302,49 @@ class commands {
         });
 
         embedQueue.start()
+
+        const filter = m => m.author.id === msg.author.id;
+
+        const collector = new Discord.MessageCollector(msg.channel, filter, {
+            time: 40000
+        })
+
+        collector.on('collect', async m => {
+            if (m.content.startsWith(prefixo)) {
+                let selected = Number(m.content.slice(2));
+
+                if (selected) {
+                    let i = 1;
+                    let removeQueue = [];
+
+                    await servers.server.fila.forEach((values) => {
+                        if (i < selected) {
+                            removeQueue.push(values.title);
+                            i++
+                        }
+                    });
+
+                    await removeQueue.forEach((values) => {
+                        servers.server.fila.delete(values);
+                    });
+
+                    console.log(removeQueue)
+
+                    servers.server.dispatcher = null;
+                    servers.server.playingNow = false;
+                    
+                    this.queue(servers, msg);
+
+                    tools.playMusic(servers, msg);
+                }
+            }
+        })
     }
 
     clearQueue = (servers, msg) => {
-        this.stop(servers);
-        servers.server.fila.clear();
-        servers.server.playingNow = false;
+        this.leave(servers, msg);
 
-        msg.channel.send(
-            new Discord.MessageEmbed()
-                .setColor([111, 20, 113])
-                .setAuthor('GroovyJR')
-                .setTitle('A fila de reprodução foi limpa!')
-        );
+        msg.channel.send(utils.embed('A fila de reprodução foi limpa!', ''));
     }
 
     random = async (servers, msg) => {

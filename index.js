@@ -25,14 +25,19 @@ client.on("ready", () => {
 var lastChannelConnected;
 
 client.on('voiceStateUpdate', (voice) => {
+    
     if (!voice.guild.me.voice.channel) {
         if (servers.server.playingNow === false) {
             return;
+        } else {
+            servers.server.connection = null;
+            servers.server.dispatcher = null;
+            servers.server.playingNow = false;
+            servers.server.fila.clear();
         }
-        servers.server.fila.clear();
         return;
     }
-
+    
     if (voice.serverMute === null && voice.id === botId) {
         console.log('Acabou de entrar filhão!')
     } else {
@@ -47,7 +52,7 @@ client.on('voiceStateUpdate', (voice) => {
 });
 
 client.on("message", async (msg) => {
-
+    
     //Filter
 
     if (!msg.guild) return;
@@ -103,4 +108,4 @@ client.on("message", async (msg) => {
 
 });
 
-client.login(process.env.TOKEN_DISCORD)
+client.login(process.env.TOKEN_DISCORD);
