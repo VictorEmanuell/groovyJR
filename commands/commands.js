@@ -262,46 +262,50 @@ class commands {
     }
 
     queue = async (servers, msg) => {
-        if (servers.server.fila.size < 1) {
-            msg.channel.send(utils.embed('Nenhuma musica na fila de reprodução!', ''));
-            return;
-        }
+        async function queueOnly(servers, msg) {
+            if (servers.server.fila.size < 1) {
+                msg.channel.send(utils.embed('Nenhuma musica na fila de reprodução!', ''));
+                return;
+            }
 
-        let array = [];
-        let i = 1;
+            let array = [];
+            let i = 1;
 
-        await servers.server.fila.forEach((values) => {
-            array.push({
-                name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
-                value: values.channel,
-                inline: false
+            await servers.server.fila.forEach((values) => {
+                array.push({
+                    name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
+                    value: values.channel,
+                    inline: false
+                });
+                i++
             });
-            i++
-        });
 
-        const separar = (list, limit) => {
-            var originalList = [];
+            const separar = (list, limit) => {
+                var originalList = [];
 
-            var loop = Number((list.length / limit).toFixed(0)) + (!!(list.length % limit) ? 1 : 0);
+                var loop = Number((list.length / limit).toFixed(0)) + (!!(list.length % limit) ? 1 : 0);
 
-            for (var index = 0, position = limit; index < loop; index++, position += limit) {
-                var grup = list.slice(index * limit, position);
-                if (grup.length) originalList.push({ fields: grup });
+                for (var index = 0, position = limit; index < loop; index++, position += limit) {
+                    var grup = list.slice(index * limit, position);
+                    if (grup.length) originalList.push({ fields: grup });
+                };
+
+                return originalList;
             };
 
-            return originalList;
-        };
+            let pages = await separar(array, 10);
 
-        let pages = await separar(array, 10);
+            const embedQueue = new embedPages(msg.channel, {
+                pages,
+                color: '#6F1471',
+                title: "GroobyJR",
+                description: "Fila de reprodução:"
+            });
 
-        const embedQueue = new embedPages(msg.channel, {
-            pages,
-            color: '#6F1471',
-            title: "GroobyJR",
-            description: "Fila de reprodução:"
-        });
+            embedQueue.start()
+        }
 
-        embedQueue.start()
+        queueOnly(servers, msg);
 
         const filter = m => m.author.id === msg.author.id;
 
@@ -332,8 +336,8 @@ class commands {
 
                     servers.server.dispatcher = null;
                     servers.server.playingNow = false;
-                    
-                    this.queue(servers, msg);
+
+                    queueOnly(servers, msg);
 
                     tools.playMusic(servers, msg);
                 }
