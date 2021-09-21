@@ -57,7 +57,7 @@ client.on('voiceStateUpdate', async (voice) => {
         }
 
         if (voice.serverMute === true && servers[voice.guild.id].playingNow === true && voice.id === botId) {//unmute
-            commands.resume(servers, voice);
+            setTimeout(() => commands.resume(servers, voice), 1000);
         }
     }
 });
@@ -122,7 +122,7 @@ client.on("message", async (msg) => {
         commands.random(servers, msg);
     }
 
-    if (msg.content === prefixo + "help") {
+    if (msg.content === prefixo + "help") {             //--help
         commands.help(servers, msg);
     }
 });
