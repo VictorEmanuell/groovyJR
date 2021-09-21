@@ -310,7 +310,7 @@ class commands {
         const filter = m => m.author.id === msg.author.id;
 
         const collector = new Discord.MessageCollector(msg.channel, filter, {
-            time: 40000
+            time: 60000
         })
 
         collector.on('collect', async m => {
