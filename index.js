@@ -7,44 +7,57 @@ const utils = require('./utils/utils');
 const client = new Discord.Client();
 
 const prefixo = process.env.PREFIX;
-
 const botId = process.env.BOT_ID;
 
-const servers = {
-    server: {
+const servers = [];
+
+client.on("ready", async () => {
+    const guilds = await client.guilds.cache.map(guild => guild.id);
+
+    await guilds.forEach((guildId) => {
+        servers[guildId] = {
+            connection: null,
+            dispatcher: null,
+            fila: new Map(),
+            playingNow: false
+        }
+    });
+
+    client.user.setActivity('Se bugar é pq tá no beta carai!');
+
+    console.log("Online!");
+});
+
+client.on('guildCreate', (guild) => {
+    servers[guild.id] = {
         connection: null,
         dispatcher: null,
         fila: new Map(),
         playingNow: false
-    },
-};
-
-client.on("ready", () => {
-    client.user.setActivity('Se bugar é pq tá no beta carai!');
-    console.log("Online!");
+    }
 });
 
 client.on('voiceStateUpdate', async (voice) => {
     if (voice.id != botId) return;
 
     if (!voice.guild.me.voice.channel) {
-        if (servers.server.playingNow === true) {
-            servers.server.connection = null;
-            servers.server.dispatcher = null;
-            servers.server.playingNow = false;
-            servers.server.fila.clear();
+        if (servers[voice.guild.id].playingNow === true) {
+            servers[voice.guild.id].connection = null;
+            servers[voice.guild.id].dispatcher = null;
+            servers[voice.guild.id].playingNow = false;
+            servers[voice.guild.id].fila.clear();
         }
         return;
     }
 
     if (voice.serverMute === null && voice.id === botId) return;
     else {
-        if (voice.serverMute === false && servers.server.playingNow === true && voice.id === botId) {//mute
-            commands.stop(servers);
+        if (voice.serverMute === false && servers[voice.guild.id].playingNow === true && voice.id === botId) {//mute
+            commands.stop(servers, voice);
         }
 
-        if (voice.serverMute === true && servers.server.playingNow === true && voice.id === botId) {//unmute
-            commands.resume(servers);
+        if (voice.serverMute === true && servers[voice.guild.id].playingNow === true && voice.id === botId) {//unmute
+            commands.resume(servers, voice);
         }
     }
 });
@@ -81,11 +94,11 @@ client.on("message", async (msg) => {
     }
 
     if (msg.content === prefixo + "stop") {             //--stop
-        commands.stop(servers);
+        commands.stop(servers, msg);
     }
 
     if (msg.content === prefixo + "resume") {           //--resume
-        commands.resume(servers);
+        commands.resume(servers, msg);
     }
 
     if (msg.content === prefixo + "skip") {             //--skip

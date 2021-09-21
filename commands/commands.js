@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const Discord = require("discord.js");
-const embedPages = require('easy-embed-pages');
 const ytdl = require("ytdl-core");
 const ytpl = require('ytpl');
 const google = require("googleapis");
+const embedPages = require('easy-embed-pages');
 
 const tools = require('../tools/tools');
 const utils = require('../utils/utils');
@@ -19,7 +19,7 @@ const youtube = new google.youtube_v3.Youtube({
 class commands {
     join = async (servers, msg) => {
         try {
-            servers.server.connection = await msg.member.voice.channel.join();
+            servers[msg.guild.id].connection = await msg.member.voice.channel.join();
         }
         catch (err) {
             console.log('ERRO AO ENTRAR NO CANAL DE VOZ, QUE MERDA ACONTECEU?');
@@ -28,10 +28,10 @@ class commands {
     }
 
     leave = async (servers, msg) => {
-        servers.server.connection = null;
-        servers.server.dispatcher = null;
-        servers.server.playingNow = false;
-        servers.server.fila.clear();
+        servers[msg.guild.id].connection = null;
+        servers[msg.guild.id].dispatcher = null;
+        servers[msg.guild.id].playingNow = false;
+        servers[msg.guild.id].fila.clear();
         msg.member.voice.channel.leave();
     }
 
@@ -43,13 +43,13 @@ class commands {
             return;
         }
 
-        await utils.checkConnection(servers, msg);
+        await tools.checkConnection(servers, msg);
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
 
             await playList.items.forEach((values) => {
-                servers.server.fila.set(values.title, {
+                servers[msg.guild.id].fila.set(values.title, {
                     id: values.id,
                     title: values.title,
                     channel: values.author.name
@@ -64,7 +64,7 @@ class commands {
             let videoId = await ytdl.getURLVideoID(whatToPlay);
             let infos = await ytdl.getBasicInfo(videoId);
 
-            servers.server.fila.set(infos.videoDetails.title, {
+            servers[msg.guild.id].fila.set(infos.videoDetails.title, {
                 id: infos.videoDetails.videoId,
                 title: infos.videoDetails.title,
                 channel: infos.videoDetails.ownerChannelName
@@ -95,7 +95,7 @@ class commands {
                         listResults.push(itemMaker);
                     }
 
-                    servers.server.fila.set(listResults[0].tituloVideo, {
+                    servers[msg.guild.id].fila.set(listResults[0].tituloVideo, {
                         id: listResults[0].id,
                         title: listResults[0].tituloVideo,
                         channel: listResults[0].nomeCanal
@@ -107,7 +107,7 @@ class commands {
                     const embed = new Discord.MessageEmbed()
                         .setColor([111, 20, 113])
                         .setAuthor('GroovyJR')
-                        .setDescription(`${servers.server.playingNow === true ? 'Adicionado a fila:' : 'Tocando...'}`)
+                        .setDescription(`${servers[msg.guild.id].playingNow === true ? 'Adicionado a fila:' : 'Tocando...'}`)
                         .addField(`${listResults[0].tituloVideo}`, `${listResults[0].nomeCanal}`);
 
                     msg.channel.send(embed);
@@ -123,13 +123,13 @@ class commands {
             msg.channel.send(await utils.embed('Digita algo misera!', ''));
         }
 
-        await utils.checkConnection(servers, msg);
+        await tools.checkConnection(servers, msg);
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
 
             await playList.items.forEach((values) => {
-                servers.server.fila.set(values.title, {
+                servers[msg.guild.id].fila.set(values.title, {
                     id: values.id,
                     title: values.title,
                     channel: values.author.name
@@ -144,7 +144,7 @@ class commands {
             let videoId = await ytdl.getURLVideoID(whatToPlay);
             let infos = await ytdl.getBasicInfo(videoId);
 
-            servers.server.fila.set(infos.videoDetails.title, {
+            servers[msg.guild.id].fila.set(infos.videoDetails.title, {
                 id: infos.videoDetails.videoId,
                 title: infos.videoDetails.title,
                 channel: infos.videoDetails.ownerChannelName
@@ -212,7 +212,7 @@ class commands {
                                         `${listResults[idOptionSelected].nomeCanal}`
                                     ));
 
-                                    servers.server.fila.set(listResults[idOptionSelected].tituloVideo, {
+                                    servers[msg.guild.id].fila.set(listResults[idOptionSelected].tituloVideo, {
                                         id: listResults[idOptionSelected].id,
                                         title: listResults[idOptionSelected].tituloVideo,
                                         channel: listResults[idOptionSelected].nomeCanal
@@ -230,18 +230,18 @@ class commands {
         }
     }
 
-    stop = async (servers) => {
-        if (servers.server.playingNow === false) {
+    stop = async (servers, msg) => {
+        if (servers[msg.guild.id].playingNow === false) {
             return;
         }
-        servers.server.dispatcher.pause();
+        servers[msg.guild.id].dispatcher.pause();
     }
 
-    resume = async (servers) => {
-        if (servers.server.playingNow === false) {
+    resume = async (servers, msg) => {
+        if (servers[msg.guild.id].playingNow === false) {
             return;
         }
-        servers.server.dispatcher.resume();
+        servers[msg.guild.id].dispatcher.resume();
     }
 
     skip = async (servers, msg) => {
@@ -249,12 +249,12 @@ class commands {
             msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
             return;
         } else {
-            if (servers.server.fila.size <= 1) {
+            if (servers[msg.guild.id].fila.size <= 1) {
                 this.leave(servers, msg);
             } else {
-                servers.server.playingNow = false;
-                let playingNow = servers.server.fila.values().next().value;
-                servers.server.fila.delete(playingNow.title)
+                servers[msg.guild.id].playingNow = false;
+                let playingNow = servers[msg.guild.id].fila.values().next().value;
+                servers[msg.guild.id].fila.delete(playingNow.title)
 
                 tools.playMusic(servers, msg);
             }
@@ -263,7 +263,7 @@ class commands {
 
     queue = async (servers, msg) => {
         async function queueOnly(servers, msg) {
-            if (servers.server.fila.size < 1) {
+            if (servers[msg.guild.id].fila.size < 1) {
                 msg.channel.send(await utils.embed('Nenhuma musica na fila de reprodução!', ''));
                 return;
             }
@@ -271,7 +271,7 @@ class commands {
             let array = [];
             let i = 1;
 
-            await servers.server.fila.forEach((values) => {
+            await servers[msg.guild.id].fila.forEach((values) => {
                 array.push({
                     name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
                     value: values.channel,
@@ -321,7 +321,7 @@ class commands {
                     let i = 1;
                     let removeQueue = [];
 
-                    await servers.server.fila.forEach((values) => {
+                    await servers[msg.guild.id].fila.forEach((values) => {
                         if (i < selected) {
                             removeQueue.push(values.title);
                             i++
@@ -329,13 +329,13 @@ class commands {
                     });
 
                     await removeQueue.forEach((values) => {
-                        servers.server.fila.delete(values);
+                        servers[msg.guild.id].fila.delete(values);
                     });
 
                     console.log(removeQueue)
 
-                    servers.server.dispatcher = null;
-                    servers.server.playingNow = false;
+                    servers[msg.guild.id].dispatcher = null;
+                    servers[msg.guild.id].playingNow = false;
 
                     queueOnly(servers, msg);
 
@@ -354,7 +354,7 @@ class commands {
     random = async (servers, msg) => {
         let random = [];
 
-        let queue = servers.server.fila
+        let queue = servers[msg.guild.id].fila
 
         await queue.forEach((values) => {
             random.push(values)
@@ -379,7 +379,7 @@ class commands {
 
         await shuffle(random);
 
-        this.stop(servers);
+        this.stop(servers, msg);
         queue.clear();
 
         await random.forEach((values) => {
@@ -390,7 +390,7 @@ class commands {
             });
         });
 
-        servers.server.playingNow = false;
+        servers[msg.guild.id].playingNow = false;
 
         tools.playMusic(servers, msg);
 
