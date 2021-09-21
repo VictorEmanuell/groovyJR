@@ -9,8 +9,6 @@ const embedPages = require('easy-embed-pages');
 const tools = require('../tools/tools');
 const utils = require('../utils/utils');
 
-const prefixo = process.env.PREFIX;
-
 const youtube = new google.youtube_v3.Youtube({
     version: 'v3',
     auth: process.env.G_KEY
@@ -103,14 +101,15 @@ class commands {
 
                     tools.playMusic(servers, msg);
 
-                    // constroi a msg Embed
-                    const embed = new Discord.MessageEmbed()
+                    if (servers[msg.guild.id].playingNow === true) {
+                        const embed = new Discord.MessageEmbed()
                         .setColor([111, 20, 113])
                         .setAuthor('GroovyJR')
-                        .setDescription(`${servers[msg.guild.id].playingNow === true ? 'Adicionado a fila:' : 'Tocando...'}`)
+                        .setDescription(`'Adicionado a fila: `)
                         .addField(`${listResults[0].tituloVideo}`, `${listResults[0].nomeCanal}`);
-
-                    msg.channel.send(embed);
+                    
+                        msg.channel.send(await embed);
+                    }
                 }
             });
         }
@@ -262,87 +261,69 @@ class commands {
     }
 
     queue = async (servers, msg) => {
-        async function queueOnly(servers, msg) {
-            if (servers[msg.guild.id].fila.size < 1) {
-                msg.channel.send(await utils.embed('Nenhuma musica na fila de reprodução!', ''));
-                return;
-            }
-
-            let array = [];
-            let i = 1;
-
-            await servers[msg.guild.id].fila.forEach((values) => {
-                array.push({
-                    name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
-                    value: values.channel,
-                    inline: false
-                });
-                i++
-            });
-
-            const separar = (list, limit) => {
-                var originalList = [];
-
-                var loop = Number((list.length / limit).toFixed(0)) + (!!(list.length % limit) ? 1 : 0);
-
-                for (var index = 0, position = limit; index < loop; index++, position += limit) {
-                    var grup = list.slice(index * limit, position);
-                    if (grup.length) originalList.push({ fields: grup });
-                };
-
-                return originalList;
-            };
-
-            let pages = await separar(array, 10);
-
-            const embedQueue = new embedPages(msg.channel, {
-                pages,
-                color: '#6F1471',
-                title: "GroobyJR",
-                description: "Fila de reprodução:"
-            });
-
-            embedQueue.start()
+        if (servers[msg.guild.id].fila.size < 1) {
+            msg.channel.send(await utils.embed('Nenhuma musica na fila de reprodução!', ''));
+            return;
         }
 
-        queueOnly(servers, msg);
+        let array = [];
+        let i = 1;
 
-        const filter = m => m.author.id === msg.author.id;
+        await servers[msg.guild.id].fila.forEach((values) => {
+            array.push({
+                name: `${i}:  ${values.title} ${i === 1 ? '[TOCANDO AGORA]' : ''}`,
+                value: values.channel,
+                inline: false
+            });
+            i++
+        });
 
-        const collector = new Discord.MessageCollector(msg.channel, filter, {
-            time: 60000
-        })
+        const separar = (list, limit) => {
+            var originalList = [];
 
-        collector.on('collect', async m => {
-            if (m.content.startsWith(prefixo)) {
-                let selected = Number(m.content.slice(2));
+            var loop = Number((list.length / limit).toFixed(0)) + (!!(list.length % limit) ? 1 : 0);
 
-                if (selected) {
-                    let i = 1;
-                    let removeQueue = [];
+            for (var index = 0, position = limit; index < loop; index++, position += limit) {
+                var grup = list.slice(index * limit, position);
+                if (grup.length) originalList.push({ fields: grup });
+            };
 
-                    await servers[msg.guild.id].fila.forEach((values) => {
-                        if (i < selected) {
-                            removeQueue.push(values.title);
-                            i++
-                        }
-                    });
+            return originalList;
+        };
 
-                    await removeQueue.forEach((values) => {
-                        servers[msg.guild.id].fila.delete(values);
-                    });
+        let pages = await separar(array, 10);
 
-                    console.log(removeQueue)
+        const embedQueue = new embedPages(msg.channel, {
+            pages,
+            color: '#6F1471',
+            title: "GroobyJR",
+            description: "Fila de reprodução:"
+        });
 
-                    servers[msg.guild.id].dispatcher = null;
-                    servers[msg.guild.id].playingNow = false;
+        embedQueue.start()
+    }
 
-                    queueOnly(servers, msg);
+    selectInQueue = async (servers, msg, selected) => {
+        let i = 1;
+        let removeQueue = [];
 
-                    tools.playMusic(servers, msg);
-                }
+        await servers[msg.guild.id].fila.forEach((values) => {
+            if (i < selected) {
+                removeQueue.push(values.title);
+                i++
             }
-        })
+        });
+
+        await removeQueue.forEach((values) => {
+            servers[msg.guild.id].fila.delete(values);
+        });
+
+        servers[msg.guild.id].dispatcher = null;
+        servers[msg.guild.id].playingNow = false;
+
+        this.queue(servers, msg);
+
+        tools.playMusic(servers, msg);
     }
 
     clearQueue = async (servers, msg) => {

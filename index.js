@@ -109,6 +109,11 @@ client.on("message", async (msg) => {
         commands.queue(servers, msg);
     }
 
+    if (msg.content.startsWith(prefixo + "> ")) {            //--queue
+        let selected = Number(msg.content.slice(4));
+        commands.selectInQueue(servers, msg, selected);
+    }
+
     if (msg.content === prefixo + "clear") {            //--clear
         commands.clearQueue(servers, msg);
     }
