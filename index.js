@@ -20,6 +20,7 @@ const servers = {
 };
 
 client.on("ready", () => {
+    client.user.setActivity('Se bugar é pq tá no beta carai!');
     console.log("Online!");
 });
 
