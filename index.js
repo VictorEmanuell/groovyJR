@@ -24,7 +24,7 @@ client.on("ready", () => {
     console.log("Online!");
 });
 
-client.on('voiceStateUpdate', (voice) => {
+client.on('voiceStateUpdate', async (voice) => {
     if (voice.id != botId) return;
 
     if (!voice.guild.me.voice.channel) {

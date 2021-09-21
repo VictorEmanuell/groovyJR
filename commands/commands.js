@@ -43,7 +43,7 @@ class commands {
             return;
         }
 
-        utils.checkConnection(servers, msg);
+        await utils.checkConnection(servers, msg);
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
@@ -123,7 +123,7 @@ class commands {
             msg.channel.send(await utils.embed('Digita algo misera!', ''));
         }
 
-        utils.checkConnection(servers, msg);
+        await utils.checkConnection(servers, msg);
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
