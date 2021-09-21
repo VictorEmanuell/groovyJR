@@ -204,7 +204,7 @@ class commands {
                             }
 
                             embedMessage.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
-                                .then((collected) => {
+                                .then(async (collected) => {
                                     const reaction = collected.first();
                                     const idOptionSelected = reactsEmojis.indexOf(reaction.emoji.name);
                                     msg.channel.send(await utils.embed(
@@ -220,7 +220,7 @@ class commands {
 
                                     tools.playMusic(servers, msg);
 
-                                }).catch((error) => {
+                                }).catch(async (error) => {
                                     msg.channel.send(await utils.embed('Você não escolheu porra nenhuma por que?!', ''));
                                     console.log(error);
                                 });
@@ -345,7 +345,7 @@ class commands {
         })
     }
 
-    clearQueue = (servers, msg) => {
+    clearQueue = async (servers, msg) => {
         this.leave(servers, msg);
 
         msg.channel.send(await utils.embed('A fila de reprodução foi limpa!', ''));
