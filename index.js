@@ -109,7 +109,7 @@ client.on("message", async (msg) => {
         commands.queue(servers, msg);
     }
 
-    if (msg.content.startsWith(prefixo + "> ")) {            //--queue
+    if (msg.content.startsWith(prefixo + "> ")) {       //--queue
         let selected = Number(msg.content.slice(4));
         commands.selectInQueue(servers, msg, selected);
     }
@@ -122,6 +122,9 @@ client.on("message", async (msg) => {
         commands.random(servers, msg);
     }
 
+    if (msg.content === prefixo + "help") {
+        commands.help(servers, msg);
+    }
 });
 
 client.login(process.env.TOKEN_DISCORD);

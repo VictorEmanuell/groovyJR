@@ -30,7 +30,12 @@ class tools {
                             this.playMusic(servers, msg);
                         }
                         else {
-                            servers[msg.guild.id].dispatcher = null
+                            setTimeout(() => {
+                                servers[msg.guild.id].dispatcher = null;
+                                servers[msg.guild.id].playingNow = false;
+                                servers[msg.guild.id].connection = null;
+                                msg.member.voice.channel.leave();
+                            }, 5000);
                         }
                     });
                 }
