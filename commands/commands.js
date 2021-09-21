@@ -78,7 +78,7 @@ class commands {
                 part: 'snippet',
                 fields: 'items(id(videoId),snippet(title, channelTitle))',
                 type: 'video'
-            }, function (err, resultado) {
+            }, async function (err, resultado) {
                 if (err) {
                     console.log(err);
                 }
@@ -120,7 +120,7 @@ class commands {
         let whatToPlay = msg.content.slice(4);
 
         if (whatToPlay.length === 0) {
-            msg.channel.send(utils.embed('Digita algo misera!', ''));
+            msg.channel.send(await utils.embed('Digita algo misera!', ''));
         }
 
         utils.checkConnection(servers, msg);
@@ -158,7 +158,7 @@ class commands {
                 part: 'snippet',
                 fields: 'items(id(videoId),snippet(title, channelTitle))',
                 type: 'video'
-            }, function (err, resultado) {
+            }, async function (err, resultado) {
                 if (err) {
                     console.log(err);
                 }
@@ -207,7 +207,7 @@ class commands {
                                 .then((collected) => {
                                     const reaction = collected.first();
                                     const idOptionSelected = reactsEmojis.indexOf(reaction.emoji.name);
-                                    msg.channel.send(utils.embed(
+                                    msg.channel.send(await utils.embed(
                                         `Você escolheu ${listResults[idOptionSelected].tituloVideo}`,
                                         `${listResults[idOptionSelected].nomeCanal}`
                                     ));
@@ -221,7 +221,7 @@ class commands {
                                     tools.playMusic(servers, msg);
 
                                 }).catch((error) => {
-                                    msg.channel.send(utils.embed('Você não escolheu porra nenhuma por que?!', ''));
+                                    msg.channel.send(await utils.embed('Você não escolheu porra nenhuma por que?!', ''));
                                     console.log(error);
                                 });
                         });
@@ -246,7 +246,7 @@ class commands {
 
     skip = async (servers, msg) => {
         if (!msg.member.voice.channel) {
-            msg.channel.send(utils.embed('Entre em um canal de voz misera!', ''));
+            msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
             return;
         } else {
             if (servers.server.fila.size <= 1) {
@@ -264,7 +264,7 @@ class commands {
     queue = async (servers, msg) => {
         async function queueOnly(servers, msg) {
             if (servers.server.fila.size < 1) {
-                msg.channel.send(utils.embed('Nenhuma musica na fila de reprodução!', ''));
+                msg.channel.send(await utils.embed('Nenhuma musica na fila de reprodução!', ''));
                 return;
             }
 
@@ -348,7 +348,7 @@ class commands {
     clearQueue = (servers, msg) => {
         this.leave(servers, msg);
 
-        msg.channel.send(utils.embed('A fila de reprodução foi limpa!', ''));
+        msg.channel.send(await utils.embed('A fila de reprodução foi limpa!', ''));
     }
 
     random = async (servers, msg) => {

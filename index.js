@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Discord = require("discord.js");
 const commands = require('./commands/commands');
+const utils = require('./utils/utils');
 
 const client = new Discord.Client();
 
@@ -21,8 +22,6 @@ const servers = {
 client.on("ready", () => {
     console.log("Online!");
 });
-
-var lastChannelConnected;
 
 client.on('voiceStateUpdate', (voice) => {
     if (voice.id != botId) return;
@@ -58,7 +57,7 @@ client.on("message", async (msg) => {
     if (!msg.content.startsWith(prefixo)) return;
 
     if (!msg.member.voice.channel) {
-        msg.channel.send("Entre em um canal de voz misera!");
+        msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
         return;
     }
 
