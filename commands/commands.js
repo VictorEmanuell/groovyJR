@@ -105,7 +105,7 @@ class commands {
                         const embed = new Discord.MessageEmbed()
                         .setColor([111, 20, 113])
                         .setAuthor('GroovyJR')
-                        .setDescription(`'Adicionado a fila: `)
+                        .setDescription(`Adicionado a fila: `)
                         .addField(`${listResults[0].tituloVideo}`, `${listResults[0].nomeCanal}`);
                     
                         msg.channel.send(await embed);
