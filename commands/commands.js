@@ -233,16 +233,16 @@ class commands {
         if (servers[msg.guild.id].playingNow === false) {
             return;
         }
-        await servers[msg.guild.id].dispatcher.pause();
-        console.log('pausado')
+        servers[msg.guild.id].dispatcher.pause();
     }
 
     resume = async (servers, msg) => {
         if (servers[msg.guild.id].playingNow === false) {
             return;
-        }
-        await servers[msg.guild.id].dispatcher.resume();
-        console.log('despausado')
+        }  
+        console.log(servers[msg.guild.id].dispatcher.paused)
+        servers[msg.guild.id].dispatcher.resume();
+        console.log(servers[msg.guild.id].dispatcher.paused)
     }
 
     skip = async (servers, msg) => {

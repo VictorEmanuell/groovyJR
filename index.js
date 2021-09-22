@@ -63,7 +63,7 @@ client.on('voiceStateUpdate', async (voice) => {
 });
 
 client.on("message", async (msg) => {
-
+    
     //Filter
 
     if (!msg.guild) return;
