@@ -239,10 +239,8 @@ class commands {
     resume = async (servers, msg) => {
         if (servers[msg.guild.id].playingNow === false) {
             return;
-        }  
-        console.log(servers[msg.guild.id].dispatcher.paused)
+        }
         servers[msg.guild.id].dispatcher.resume();
-        console.log(servers[msg.guild.id].dispatcher.paused)
     }
 
     skip = async (servers, msg) => {
