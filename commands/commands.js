@@ -233,14 +233,14 @@ class commands {
         if (servers[msg.guild.id].playingNow === false) {
             return;
         }
-        servers[msg.guild.id].dispatcher.pause();
+        await servers[msg.guild.id].dispatcher.pause();
     }
 
     resume = async (servers, msg) => {
         if (servers[msg.guild.id].playingNow === false) {
             return;
         }
-        servers[msg.guild.id].dispatcher.resume();
+        await servers[msg.guild.id].dispatcher.resume();
     }
 
     skip = async (servers, msg) => {

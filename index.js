@@ -52,12 +52,12 @@ client.on('voiceStateUpdate', async (voice) => {
 
     if (voice.serverMute === null && voice.id === botId) return;
     else {
-        if (voice.serverMute === false && servers[voice.guild.id].playingNow === true && voice.id === botId) {//mute
-            commands.stop(servers, voice);
+        if (voice.guild.voice.serverMute === false && servers[voice.guild.id].playingNow === true && voice.id === botId) {//unmute
+            commands.resume(servers, voice);
         }
 
-        if (voice.serverMute === true && servers[voice.guild.id].playingNow === true && voice.id === botId) {//unmute
-            setTimeout(() => commands.resume(servers, voice), 1000);
+        if (voice.guild.voice.serverMute === true && servers[voice.guild.id].playingNow === true && voice.id === botId) {//mute
+            commands.stop(servers, voice)
         }
     }
 });
