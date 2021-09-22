@@ -234,6 +234,7 @@ class commands {
             return;
         }
         await servers[msg.guild.id].dispatcher.pause();
+        console.log('pausado')
     }
 
     resume = async (servers, msg) => {
@@ -241,6 +242,7 @@ class commands {
             return;
         }
         await servers[msg.guild.id].dispatcher.resume();
+        console.log('despausado')
     }
 
     skip = async (servers, msg) => {
