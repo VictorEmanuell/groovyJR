@@ -411,6 +411,8 @@ class commands {
             .addField('--stop', 'Pausa a reprodução da música.')
             .addField('--resume', 'Continua a reprodução da música.')
             .addField('--skip', 'Pula para a próxima música.\nSe não houver mais músicas na fila o bot desconecta.')
+            .addField('--v', 'Exibe o volume atual da reprodução.')
+            .addField('--v 45', 'Define um volume de reprodução: 0-150')
             .addField('--queue', 'Exibe a fila de reprodução.\nVocê pode navegar entre as páginas por meio de reações com emotes.')
             .addField('-->', 'Baseado na enumeração da fila de reprodução, você pode pular para a música desejada.\nEx.: --> 25')
             .addField('--clear', 'Limpa a fila de reprodução.')
