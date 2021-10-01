@@ -105,11 +105,20 @@ client.on("message", async (msg) => {
         commands.skip(servers, msg);
     }
 
+    if (msg.content === prefixo + "v") {                //--v
+        commands.getVolume(servers, msg);
+    }
+
+    if (msg.content.startsWith(prefixo + "v ")) {       //--v 50
+        let selected = Number(msg.content.slice(4));
+        commands.setVolume(servers, msg, selected);
+    }
+
     if (msg.content === prefixo + "queue") {            //--queue
         commands.queue(servers, msg);
     }
 
-    if (msg.content.startsWith(prefixo + "> ")) {       //--queue
+    if (msg.content.startsWith(prefixo + "> ")) {       //-->
         let selected = Number(msg.content.slice(4));
         commands.selectInQueue(servers, msg, selected);
     }

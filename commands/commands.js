@@ -230,17 +230,17 @@ class commands {
     }
 
     stop = async (servers, msg) => {
-        if (servers[msg.guild.id].playingNow === false) {
-            return;
+        if (servers[msg.guild.id].playingNow && !servers[msg.guild.id].dispatcher.paused) {
+            servers[msg.guild.id].dispatcher.pause();
         }
-        servers[msg.guild.id].dispatcher.pause();
     }
 
     resume = async (servers, msg) => {
-        if (servers[msg.guild.id].playingNow === false) {
-            return;
+        if (servers[msg.guild.id].playingNow && servers[msg.guild.id].dispatcher.paused) {
+            servers[msg.guild.id].dispatcher.resume();
+            servers[msg.guild.id].dispatcher.pause();
+            servers[msg.guild.id].dispatcher.resume();
         }
-        servers[msg.guild.id].dispatcher.resume();
     }
 
     skip = async (servers, msg) => {
@@ -257,6 +257,20 @@ class commands {
 
                 tools.playMusic(servers, msg);
             }
+        }
+    }
+
+    getVolume = async (servers, msg) => {
+        if (servers[msg.guild.id].playingNow) {
+            let volume = await servers[msg.guild.id].dispatcher.volume;
+            msg.channel.send(await utils.embed('Ajustes', `O volume atual é: ${volume*100}`));
+        }
+    }
+
+    setVolume = async (servers, msg, selected) => {
+        if (servers[msg.guild.id].playingNow) {
+            servers[msg.guild.id].dispatcher.setVolume(selected / 100);
+            msg.channel.send(await utils.embed('Ajustes', `Volume definido em: ${selected}`));
         }
     }
 
