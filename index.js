@@ -72,6 +72,7 @@ client.on("message", async (msg) => {
 
     if (msg.content === prefixo + "help") {             //--help
         commands.help(servers, msg);
+        return;
     }
 
     if (!msg.member.voice.channel) {
