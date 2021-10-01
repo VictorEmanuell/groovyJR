@@ -70,6 +70,10 @@ client.on("message", async (msg) => {
 
     if (!msg.content.startsWith(prefixo)) return;
 
+    if (msg.content === prefixo + "help") {             //--help
+        commands.help(servers, msg);
+    }
+
     if (!msg.member.voice.channel) {
         msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
         return;
@@ -129,10 +133,6 @@ client.on("message", async (msg) => {
 
     if (msg.content === prefixo + "random") {           //--random
         commands.random(servers, msg);
-    }
-
-    if (msg.content === prefixo + "help") {             //--help
-        commands.help(servers, msg);
     }
 });
 
