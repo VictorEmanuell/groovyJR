@@ -61,8 +61,6 @@ class commands {
             let videoId = await ytdl.getURLVideoID(whatToPlay);
             let infos = await ytdl.getBasicInfo(videoId);
 
-            console.log(infos.videoDetails)
-
             servers[msg.guild.id].fila.set(infos.videoDetails.title, {
                 id: infos.videoDetails.videoId,
                 title: infos.videoDetails.title,
@@ -132,7 +130,6 @@ class commands {
                 thumb: infos.videoDetails.thumbnails[0].url
             });
 
-            console.log('Adicionado: ' + whatToPlay);
             tools.playMusic(servers, msg);
         } else {
             api.search(whatToPlay, 'song').then(async result => {
