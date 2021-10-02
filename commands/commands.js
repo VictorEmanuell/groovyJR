@@ -3,16 +3,14 @@ require('dotenv').config();
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 const ytpl = require('ytpl');
-const google = require("googleapis");
 const embedPages = require('easy-embed-pages');
 
 const tools = require('../tools/tools');
 const utils = require('../utils/utils');
 
-const youtube = new google.youtube_v3.Youtube({
-    version: 'v3',
-    auth: process.env.G_KEY
-});
+const Ytm = require('youtube-music-api');
+const api = new Ytm();
+api.initalize();
 
 class commands {
     join = async (servers, msg) => {
@@ -50,7 +48,8 @@ class commands {
                 servers[msg.guild.id].fila.set(values.title, {
                     id: values.id,
                     title: values.title,
-                    channel: values.author.name
+                    channel: values.author.name,
+                    thumb: values.thumbnails[0].url
                 })
             });
 
@@ -62,56 +61,38 @@ class commands {
             let videoId = await ytdl.getURLVideoID(whatToPlay);
             let infos = await ytdl.getBasicInfo(videoId);
 
+            console.log(infos.videoDetails)
+
             servers[msg.guild.id].fila.set(infos.videoDetails.title, {
                 id: infos.videoDetails.videoId,
                 title: infos.videoDetails.title,
-                channel: infos.videoDetails.ownerChannelName
+                channel: infos.videoDetails.ownerChannelName,
+                thumb: infos.videoDetails.thumbnails[0].url
             });
 
-            console.log('Adicionado: ' + whatToPlay);
             tools.playMusic(servers, msg);
         } else {
-            youtube.search.list({
-                q: whatToPlay,
-                part: 'snippet',
-                fields: 'items(id(videoId),snippet(title, channelTitle))',
-                type: 'video'
-            }, async function (err, resultado) {
-                if (err) {
-                    console.log(err);
+            api.search(whatToPlay, 'song').then(async result => {
+                servers[msg.guild.id].fila.set(result.content[0].name, {
+                    id: result.content[0].videoId,
+                    title: result.content[0].name,
+                    channel: result.content[0].artist.name,
+                    thumb: result.content[0].thumbnails[0].url
+                });
+
+                tools.playMusic(servers, msg);
+
+                if (servers[msg.guild.id].playingNow === true) {
+                    const embed = new Discord.MessageEmbed()
+                        .setColor([111, 20, 113])
+                        .setAuthor('GroovyJR')
+                        .setDescription(`Adicionado a fila: `)
+                        .addField(`${result.content[0].name}`, `${result.content[0].artist.name}`);
+
+                    msg.channel.send(await embed);
                 }
-                if (resultado) {
-                    const listResults = [];
+            })
 
-                    // organiza os resultados da pesquisa
-                    for (let i in resultado.data.items) {
-                        const itemMaker = {
-                            'tituloVideo': resultado.data.items[i].snippet.title,
-                            'nomeCanal': resultado.data.items[i].snippet.channelTitle,
-                            'id': resultado.data.items[i].id.videoId
-                        }
-                        listResults.push(itemMaker);
-                    }
-
-                    servers[msg.guild.id].fila.set(listResults[0].tituloVideo, {
-                        id: listResults[0].id,
-                        title: listResults[0].tituloVideo,
-                        channel: listResults[0].nomeCanal
-                    });
-
-                    tools.playMusic(servers, msg);
-
-                    if (servers[msg.guild.id].playingNow === true) {
-                        const embed = new Discord.MessageEmbed()
-                            .setColor([111, 20, 113])
-                            .setAuthor('GroovyJR')
-                            .setDescription(`Adicionado a fila: `)
-                            .addField(`${listResults[0].tituloVideo}`, `${listResults[0].nomeCanal}`);
-
-                        msg.channel.send(await embed);
-                    }
-                }
-            });
         }
     }
 
@@ -131,7 +112,8 @@ class commands {
                 servers[msg.guild.id].fila.set(values.title, {
                     id: values.id,
                     title: values.title,
-                    channel: values.author.name
+                    channel: values.author.name,
+                    thumb: values.thumbnails[0].url
                 })
             });
 
@@ -146,86 +128,81 @@ class commands {
             servers[msg.guild.id].fila.set(infos.videoDetails.title, {
                 id: infos.videoDetails.videoId,
                 title: infos.videoDetails.title,
-                channel: infos.videoDetails.ownerChannelName
+                channel: infos.videoDetails.ownerChannelName,
+                thumb: infos.videoDetails.thumbnails[0].url
             });
 
             console.log('Adicionado: ' + whatToPlay);
             tools.playMusic(servers, msg);
         } else {
-            youtube.search.list({
-                q: whatToPlay,
-                part: 'snippet',
-                fields: 'items(id(videoId),snippet(title, channelTitle))',
-                type: 'video'
-            }, async function (err, resultado) {
-                if (err) {
-                    console.log(err);
-                }
-                if (resultado) {
-                    const listResults = [];
+            api.search(whatToPlay, 'song').then(async result => {
+                const listResults = [];
 
-                    // organiza os resultados da pesquisa
-                    for (let i in resultado.data.items) {
-                        const itemMaker = {
-                            'tituloVideo': resultado.data.items[i].snippet.title,
-                            'nomeCanal': resultado.data.items[i].snippet.channelTitle,
-                            'id': resultado.data.items[i].id.videoId
+                // organiza os resultados da pesquisa
+                for (let i in result.content) {
+                    if (i > 4) break;
+
+                    const itemMaker = {
+                        'thumb': result.content[i].thumbnails[0].url,
+                        'tituloVideo': result.content[i].name,
+                        'nomeCanal': result.content[i].artist.name,
+                        'id': result.content[i].videoId
+                    }
+                    listResults.push(itemMaker);
+                }
+
+                // constroi a msg Embed
+                const embed = new Discord.MessageEmbed()
+                    .setColor([111, 20, 113])
+                    .setAuthor('GroovyJR')
+                    .setDescription('Escolha sua música de 1-5');
+
+
+                // adiciona campos para cada resultado da lista
+                for (let i in listResults) {
+                    embed.addField(
+                        `${parseInt(i) + 1}: ${listResults[i].tituloVideo}`,
+                        listResults[i].nomeCanal
+                    );
+                }
+                msg.channel.send(embed)
+                    .then((embedMessage) => {
+                        const reactsEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
+
+                        // escolhe musica por emoji
+                        for (let i = 0; i < reactsEmojis.length; i++) {
+                            embedMessage.react(reactsEmojis[i]);
                         }
-                        listResults.push(itemMaker);
-                    }
 
-                    // constroi a msg Embed
-                    const embed = new Discord.MessageEmbed()
-                        .setColor([111, 20, 113])
-                        .setAuthor('GroovyJR')
-                        .setDescription('Escolha sua música de 1-5');
+                        const filter = (reaction, user) => {
+                            return reactsEmojis.includes(reaction.emoji.name)
+                                && user.id === msg.author.id;
+                        }
 
+                        embedMessage.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+                            .then(async (collected) => {
+                                const reaction = collected.first();
+                                const idOptionSelected = reactsEmojis.indexOf(reaction.emoji.name);
+                                msg.channel.send(await utils.embed(
+                                    `Você escolheu ${listResults[idOptionSelected].tituloVideo}`,
+                                    `${listResults[idOptionSelected].nomeCanal}`
+                                ));
 
-                    // adiciona campos para cada resultado da lista
-                    for (let i in listResults) {
-                        embed.addField(
-                            `${parseInt(i) + 1}: ${listResults[i].tituloVideo}`,
-                            listResults[i].nomeCanal
-                        );
-                    }
-                    msg.channel.send(embed)
-                        .then((embedMessage) => {
-                            const reactsEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
-
-                            // escolhe musica por emoji
-                            for (let i = 0; i < reactsEmojis.length; i++) {
-                                embedMessage.react(reactsEmojis[i]);
-                            }
-
-                            const filter = (reaction, user) => {
-                                return reactsEmojis.includes(reaction.emoji.name)
-                                    && user.id === msg.author.id;
-                            }
-
-                            embedMessage.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
-                                .then(async (collected) => {
-                                    const reaction = collected.first();
-                                    const idOptionSelected = reactsEmojis.indexOf(reaction.emoji.name);
-                                    msg.channel.send(await utils.embed(
-                                        `Você escolheu ${listResults[idOptionSelected].tituloVideo}`,
-                                        `${listResults[idOptionSelected].nomeCanal}`
-                                    ));
-
-                                    servers[msg.guild.id].fila.set(listResults[idOptionSelected].tituloVideo, {
-                                        id: listResults[idOptionSelected].id,
-                                        title: listResults[idOptionSelected].tituloVideo,
-                                        channel: listResults[idOptionSelected].nomeCanal
-                                    });
-
-                                    tools.playMusic(servers, msg);
-
-                                }).catch(async (error) => {
-                                    msg.channel.send(await utils.embed('Você não escolheu porra nenhuma por que?!', ''));
-                                    console.log(error);
+                                servers[msg.guild.id].fila.set(listResults[idOptionSelected].tituloVideo, {
+                                    id: listResults[idOptionSelected].id,
+                                    title: listResults[idOptionSelected].tituloVideo,
+                                    channel: listResults[idOptionSelected].nomeCanal,
+                                    thumb: listResults[idOptionSelected].thumb
                                 });
-                        });
-                }
-            });
+
+                                tools.playMusic(servers, msg);
+
+                            }).catch(async (error) => {
+                                msg.channel.send(await utils.embed('Você não escolheu porra nenhuma por que?!', ''));
+                                console.log(error);
+                            });
+                    });
+            })
         }
     }
 
@@ -263,7 +240,7 @@ class commands {
     getVolume = async (servers, msg) => {
         if (servers[msg.guild.id].playingNow) {
             let volume = await servers[msg.guild.id].dispatcher.volume;
-            msg.channel.send(await utils.embed('Ajustes', `O volume atual é: ${volume*100}`));
+            msg.channel.send(await utils.embed('Ajustes', `O volume atual é: ${volume * 100}`));
         }
     }
 

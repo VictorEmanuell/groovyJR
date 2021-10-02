@@ -14,8 +14,11 @@ class tools {
                 const embed = new Discord.MessageEmbed()
                     .setColor([111, 20, 113])
                     .setAuthor('GroovyJR')
+                    .setTitle('> Ir para YouTube')
+                    .setURL(`https://www.youtube.com/watch?v=${playing.id}`)
                     .setDescription(`Tocando agora: `)
-                    .addField(playing.title, playing.channel);
+                    .addField(playing.title, playing.channel)
+                    .setThumbnail(playing.thumb);
 
                 msg.channel.send(await embed);
 
