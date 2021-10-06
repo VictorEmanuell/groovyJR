@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const Discord = require("discord.js");
-const commands = require('./commands/commands');
+const commands = require('./commands.js');
 const utils = require('./utils/utils');
 
 const client = new Discord.Client();
@@ -9,9 +9,11 @@ const client = new Discord.Client();
 const prefixo = process.env.PREFIX;
 const botId = process.env.BOT_ID;
 
+const { stop, resume } = require('./commands/export/export');
+
 const servers = [];
 
-client.on("ready", async () => {
+client.on('ready', async () => {
     const guilds = await client.guilds.cache.map(guild => guild.id);
 
     await guilds.forEach((guildId) => {
@@ -19,7 +21,8 @@ client.on("ready", async () => {
             connection: null,
             dispatcher: null,
             fila: new Map(),
-            playingNow: false
+            playingNow: false,
+            volume: 100
         }
     });
 
@@ -33,7 +36,8 @@ client.on('guildCreate', (guild) => {
         connection: null,
         dispatcher: null,
         fila: new Map(),
-        playingNow: false
+        playingNow: false,
+        volume: 100
     }
 });
 
@@ -45,6 +49,7 @@ client.on('voiceStateUpdate', async (voice) => {
             servers[voice.guild.id].connection = null;
             servers[voice.guild.id].dispatcher = null;
             servers[voice.guild.id].playingNow = false;
+            servers[voice.guild.id].volume = 100;
             servers[voice.guild.id].fila.clear();
         }
         return;
@@ -53,17 +58,17 @@ client.on('voiceStateUpdate', async (voice) => {
     if (voice.serverMute === null && voice.id === botId) return;
     else {
         if (voice.guild.voice.serverMute === false && servers[voice.guild.id].playingNow === true && voice.id === botId) {//unmute
-            commands.resume(servers, voice);
+            resume(servers, voice);
         }
 
         if (voice.guild.voice.serverMute === true && servers[voice.guild.id].playingNow === true && voice.id === botId) {//mute
-            commands.stop(servers, voice)
+            stop(servers, voice)
         }
     }
 });
 
-client.on("message", async (msg) => {
-    
+client.on('message', async (msg) => {
+
     //Filter
 
     if (!msg.guild) return;
@@ -82,59 +87,7 @@ client.on("message", async (msg) => {
 
     //Commands
 
-    if (msg.content === prefixo + "join") {             //--join
-        commands.join(servers, msg);
-    }
-
-    if (msg.content === prefixo + "leave") {            //--leave
-        commands.leave(servers, msg);
-    }
-
-    if (msg.content.startsWith(prefixo + "p")) {        //--p <link>
-        commands.play(servers, msg);
-    }
-
-    if (msg.content.startsWith(prefixo + "s ")) {       //--s <keyword>
-        commands.search(servers, msg);
-    }
-
-    if (msg.content === prefixo + "stop") {             //--stop
-        commands.stop(servers, msg);
-    }
-
-    if (msg.content === prefixo + "resume") {           //--resume
-        commands.resume(servers, msg);
-    }
-
-    if (msg.content === prefixo + "skip") {             //--skip
-        commands.skip(servers, msg);
-    }
-
-    if (msg.content === prefixo + "v") {                //--v
-        commands.getVolume(servers, msg);
-    }
-
-    if (msg.content.startsWith(prefixo + "v ")) {       //--v 50
-        let selected = Number(msg.content.slice(4));
-        commands.setVolume(servers, msg, selected);
-    }
-
-    if (msg.content === prefixo + "queue") {            //--queue
-        commands.queue(servers, msg);
-    }
-
-    if (msg.content.startsWith(prefixo + "> ")) {       //-->
-        let selected = Number(msg.content.slice(4));
-        commands.selectInQueue(servers, msg, selected);
-    }
-
-    if (msg.content === prefixo + "clear") {            //--clear
-        commands.clearQueue(servers, msg);
-    }
-
-    if (msg.content === prefixo + "random") {           //--random
-        commands.random(servers, msg);
-    }
+    commands(servers, msg);
 });
 
 client.login(process.env.TOKEN_DISCORD);

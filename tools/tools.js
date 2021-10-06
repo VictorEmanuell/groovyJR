@@ -1,8 +1,6 @@
 const Discord = require('discord.js');
 const ytdl = require("ytdl-core");
 
-const utils = require('../utils/utils');
-
 const config = require('../config.json');
 
 class tools {
@@ -24,6 +22,7 @@ class tools {
 
                 servers[msg.guild.id].playingNow = true;
                 servers[msg.guild.id].dispatcher = servers[msg.guild.id].connection.play(ytdl(playing.id, config.YTDL));
+                servers[msg.guild.id].dispatcher.setVolume(servers[msg.guild.id].volume / 100);
 
                 const finish = async (servers, msg) => {
                     servers[msg.guild.id].dispatcher.on('finish', () => {
