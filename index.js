@@ -27,6 +27,7 @@ client.on('ready', async () => {
     });
 
     client.user.setActivity('Se bugar é pq tá no beta carai!');
+    client.user.setAvatar(process.env.APP_LOGO);
 
     console.log("Online!");
 });

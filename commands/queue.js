@@ -37,7 +37,7 @@ module.exports = async (servers, msg) => {
     const embedQueue = new embedPages(msg.channel, {
         pages,
         color: '#6F1471',
-        title: "GroobyJR",
+        title: "GroovyJR",
         description: "Fila de reprodução:"
     });
 
