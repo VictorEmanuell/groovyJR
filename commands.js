@@ -15,7 +15,8 @@ const {
     queue,
     selectInQueue,
     clearQueue,
-    random
+    random,
+    restart
 } = require('./commands/export/export');
 
 module.exports = (servers, msg) => {
@@ -47,6 +48,9 @@ module.exports = (servers, msg) => {
             break;
         case prefixo + 'random':
             random(servers, msg);
+            break;
+        case prefixo + 'restart':
+            restart(msg);
             break;
     }
 
