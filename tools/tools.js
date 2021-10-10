@@ -21,7 +21,7 @@ class tools {
                 msg.channel.send(await embed);
 
                 servers[msg.guild.id].playingNow = true;
-                servers[msg.guild.id].dispatcher = servers[msg.guild.id].connection.play(ytdl(playing.id, config.YTDL));
+                servers[msg.guild.id].dispatcher = await servers[msg.guild.id].connection.play(await ytdl(playing.id, config.YTDL));
                 servers[msg.guild.id].dispatcher.setVolume(servers[msg.guild.id].volume / 100);
 
                 const finish = async (servers, msg) => {
