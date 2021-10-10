@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const embed = require('../utils/utils');
+const utils = require('../utils/utils');
 
 module.exports = async (msg) => {
     await axios.delete(`https://api.heroku.com/apps/${process.env.APP_ID}/dynos`, {
@@ -11,5 +11,5 @@ module.exports = async (msg) => {
         }
     });
 
-    msg.channel.send(await embed('Ajustes', 'Bot reiniciado!'));
+    msg.channel.send(await utils.embed('Ajustes', 'Bot reiniciado!'));
 }
