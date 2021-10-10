@@ -47,7 +47,7 @@ module.exports = async (servers, msg) => {
 
         tools.playMusic(servers, msg);
     } else {
-        api.search(whatToPlay, 'song').then(async result => {
+        await api.search(whatToPlay, 'song').then(async result => {
             const listResults = [];
 
             // organiza os resultados da pesquisa

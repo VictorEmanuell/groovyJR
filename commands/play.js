@@ -48,7 +48,7 @@ module.exports = async (servers, msg) => {
 
         tools.playMusic(servers, msg);
     } else {
-        api.search(whatToPlay, 'song').then(async result => {
+        await api.search(whatToPlay, 'song').then(async result => {
             servers[msg.guild.id].fila.set(result.content[0].name, {
                 id: result.content[0].videoId,
                 title: result.content[0].name,
