@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 
-module.exports = async (servers, msg) => {
+module.exports = async (msg) => {
     const embed = new Discord.MessageEmbed()
         .setColor([111, 20, 113])
         .setAuthor('GroovyJR')

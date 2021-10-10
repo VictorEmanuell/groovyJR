@@ -9,7 +9,7 @@ const client = new Discord.Client();
 const prefixo = process.env.PREFIX;
 const botId = process.env.BOT_ID;
 
-const { stop, resume } = require('./commands/export/export');
+const { stop, resume, help } = require('./commands/export/export');
 
 const servers = [];
 
@@ -76,7 +76,7 @@ client.on('message', async (msg) => {
     if (!msg.content.startsWith(prefixo)) return;
 
     if (msg.content === prefixo + "help") {             //--help
-        commands.help(servers, msg);
+        help(msg);
         return;
     }
 
