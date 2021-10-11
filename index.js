@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const fs = require('fs');
 const Discord = require("discord.js");
 const commands = require('./commands.js');
 const utils = require('./utils/utils');
@@ -27,7 +28,7 @@ client.on('ready', async () => {
     });
 
     client.user.setActivity('Se bugar é pq tá no beta carai!');
-    client.user.setAvatar(process.env.APP_LOGO);
+    client.user.setAvatar(fs.readFileSync('./assets/groovy-jr-avatar.png'));
 
     console.log("Online!");
 });
