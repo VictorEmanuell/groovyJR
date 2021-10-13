@@ -20,8 +20,10 @@ class tools {
 
                 msg.channel.send(await embed);
 
+                let music = await ytdl(playing.id, config.YTDL);
+
                 servers[msg.guild.id].playingNow = true;
-                servers[msg.guild.id].dispatcher = await servers[msg.guild.id].connection.play(await ytdl(playing.id, config.YTDL));
+                servers[msg.guild.id].dispatcher = await servers[msg.guild.id].connection.play(music);
                 servers[msg.guild.id].dispatcher.setVolume(servers[msg.guild.id].volume / 100);
 
                 const finish = async (servers, msg) => {
