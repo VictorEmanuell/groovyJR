@@ -48,7 +48,6 @@ client.on('voiceStateUpdate', async (voice) => {
 
     if (!voice.guild.me.voice.channel) {
         if (servers[voice.guild.id].playingNow === true) {
-            servers[voice.guild.id].connection.finally();
             servers[voice.guild.id].connection = null;
             servers[voice.guild.id].dispatcher = null;
             servers[voice.guild.id].playingNow = false;

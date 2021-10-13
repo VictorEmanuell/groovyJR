@@ -35,7 +35,6 @@ class tools {
                         }
                         else {
                             setTimeout(() => {
-                                servers[msg.guild.id].connection.finally();
                                 servers[msg.guild.id].dispatcher = null;
                                 servers[msg.guild.id].playingNow = false;
                                 servers[msg.guild.id].connection = null;
