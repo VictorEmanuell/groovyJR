@@ -49,9 +49,12 @@ module.exports = (servers, msg) => {
         case prefixo + 'random':
             random(servers, msg);
             break;
-        case prefixo + 'restart':
-            restart(msg);
-            break;
+
+        // Restart is command to restart the application on heroku.
+
+        // case prefixo + 'restart':
+        //     restart(msg);
+        //     break;
     }
 
     if (msg.content.startsWith(prefixo + "p ")) {        //--p <link>
