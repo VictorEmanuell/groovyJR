@@ -23,7 +23,8 @@ client.on('ready', async () => {
             dispatcher: null,
             fila: new Map(),
             playingNow: false,
-            volume: 100
+            volume: 100,
+            filter: []
         }
     });
 
@@ -39,7 +40,8 @@ client.on('guildCreate', (guild) => {
         dispatcher: null,
         fila: new Map(),
         playingNow: false,
-        volume: 100
+        volume: 100,
+        filter: []
     }
 });
 
@@ -82,10 +84,10 @@ client.on('message', async (msg) => {
         return;
     }
 
-    if (msg.content === prefixo + "app") {             //--app
-        appConnect(msg);
-        return;
-    }
+    // if (msg.content === prefixo + "app") {             //--app
+    //     appConnect(msg);
+    //     return;
+    // }
 
     if (!msg.member.voice.channel) {
         msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
@@ -99,6 +101,6 @@ client.on('message', async (msg) => {
 
 // App commands from WebSocket API
 
-require('./appCommands/WebSocketConnection/index')(servers, client);
+// require('./appCommands/WebSocketConnection/index')(servers, client);
 
 client.login(process.env.TOKEN_DISCORD);

@@ -16,7 +16,8 @@ const {
     selectInQueue,
     clearQueue,
     random,
-    restart
+    restart,
+    filter,
 } = require('./commands/export/export');
 
 module.exports = (servers, msg) => {
@@ -48,6 +49,9 @@ module.exports = (servers, msg) => {
             break;
         case prefixo + 'random':
             random(servers, msg);
+            break;
+        case prefixo + 'eq':
+            filter(servers, msg);
             break;
 
         // Restart is command to restart the application on heroku.

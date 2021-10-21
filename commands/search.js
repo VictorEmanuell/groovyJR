@@ -111,7 +111,6 @@ module.exports = async (servers, msg) => {
 
                         }).catch(async (error) => {
                             msg.channel.send(await utils.embed('Você não escolheu porra nenhuma por que?!', ''));
-                            console.log(error);
                         });
                 });
         })

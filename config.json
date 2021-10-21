@@ -1,5 +1,6 @@
 {
     "YTDL": {
-        "filter": "audioonly"
+        "filter": "audioonly",
+        "opusEncoded": true
     }
 }

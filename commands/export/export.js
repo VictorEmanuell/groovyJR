@@ -14,5 +14,6 @@ module.exports = {
     random: require('../random'),
     help: require('../help'),
     restart: require('../restart'),
+    filter: require('../filter'),
     appConnect: require('../appConnect'),
 }
