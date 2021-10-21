@@ -13,5 +13,6 @@ module.exports = {
     clearQueue: require('../clearQueue'),
     random: require('../random'),
     help: require('../help'),
-    restart: require('../restart')
+    restart: require('../restart'),
+    appConnect: require('../appConnect'),
 }

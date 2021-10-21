@@ -10,7 +10,7 @@ const client = new Discord.Client();
 const prefixo = process.env.PREFIX;
 const botId = process.env.BOT_ID;
 
-const { stop, resume, help } = require('./commands/export/export');
+const { stop, resume, help, appConnect } = require('./commands/export/export');
 
 const servers = [];
 
@@ -28,7 +28,7 @@ client.on('ready', async () => {
     });
 
     client.user.setActivity('Se bugar é pq tá no beta carai!');
-    client.user.setAvatar(fs.readFileSync('./assets/groovy-jr-avatar.png'));
+    // client.user.setAvatar(fs.readFileSync('./assets/groovy-jr-avatar.png'));
 
     console.log("Online!");
 });
@@ -82,6 +82,11 @@ client.on('message', async (msg) => {
         return;
     }
 
+    if (msg.content === prefixo + "app") {             //--app
+        appConnect(msg);
+        return;
+    }
+
     if (!msg.member.voice.channel) {
         msg.channel.send(await utils.embed('Entre em um canal de voz misera!', ''));
         return;
@@ -89,7 +94,11 @@ client.on('message', async (msg) => {
 
     //Commands
 
-    commands(servers, msg);
+    commands(servers, msg, client);
 });
+
+// App commands from WebSocket API
+
+require('./appCommands/WebSocketConnection/index')(servers, client);
 
 client.login(process.env.TOKEN_DISCORD);
