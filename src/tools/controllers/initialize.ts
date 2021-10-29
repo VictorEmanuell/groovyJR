@@ -85,7 +85,8 @@ export class Initialize {
             // Ping
 
             if (msg.content === prefixo + 'ping') {
-                msg.channel.send(await utils.embed_1(`Latência da API: ${Math.round(client.ws.ping)}ms`, ''))
+                msg.channel.send(await utils.embed_1(`Latência da API: ${Math.round(client.ws.ping)}ms`, ''));
+                return;
             }
 
             if (!msg.member.voice.channel) {
