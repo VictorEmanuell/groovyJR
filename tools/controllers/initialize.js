@@ -63,20 +63,25 @@ class Initialize {
             }
         });
         client.on('message', async (msg) => {
-            //Filter
+            // Filter
             if (!msg.guild)
                 return;
             if (!msg.content.startsWith(prefixo))
                 return;
-            if (msg.content === prefixo + "help") { //--help
+            // Help
+            if (msg.content === prefixo + 'help') {
                 help_1.help.execute(msg);
                 return;
+            }
+            // Ping
+            if (msg.content === prefixo + 'ping') {
+                msg.channel.send(await utils_1.default.embed_1(`Latência da API: ${Math.round(client.ws.ping)}ms`, ''));
             }
             if (!msg.member.voice.channel) {
                 msg.channel.send(await utils_1.default.embed_1('Entre em um canal de voz misera!', ''));
                 return;
             }
-            //Commands
+            // Commands
             (0, commands_1.default)(servers, msg);
         });
     }
