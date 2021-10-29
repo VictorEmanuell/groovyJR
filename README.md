@@ -24,7 +24,7 @@
 
 ##### BOT_ID="discord_bot_id"
 ##### PREFIX="choose_prefix"
-##### TOKEN="discord-bot_token"
+##### TOKEN_DISCORD="discord-bot_token"
 \
 \
 @VictorEmanuell
