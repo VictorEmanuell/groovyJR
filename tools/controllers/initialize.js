@@ -76,6 +76,7 @@ class Initialize {
             // Ping
             if (msg.content === prefixo + 'ping') {
                 msg.channel.send(await utils_1.default.embed_1(`Latência da API: ${Math.round(client.ws.ping)}ms`, ''));
+                return;
             }
             if (!msg.member.voice.channel) {
                 msg.channel.send(await utils_1.default.embed_1('Entre em um canal de voz misera!', ''));
