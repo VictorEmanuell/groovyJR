@@ -69,15 +69,23 @@ export class Initialize {
 
         client.on('message', async (msg) => {
 
-            //Filter
+            // Filter
 
             if (!msg.guild) return;
 
             if (!msg.content.startsWith(prefixo)) return;
 
-            if (msg.content === prefixo + "help") {             //--help
+            // Help
+
+            if (msg.content === prefixo + 'help') {
                 help.execute(msg);
                 return;
+            }
+
+            // Ping
+
+            if (msg.content === prefixo + 'ping') {
+                msg.channel.send(await utils.embed_1(`Latência da API: ${Math.round(client.ws.ping)}ms`, ''))
             }
 
             if (!msg.member.voice.channel) {
@@ -85,7 +93,7 @@ export class Initialize {
                 return;
             }
 
-            //Commands
+            // Commands
 
             commands(servers, msg);
         });
