@@ -36,8 +36,8 @@ export class PlayMusic {
             servers[msg.guild.id].dispatcher = await servers[msg.guild.id].connection.play(music, { type: 'opus' });
             servers[msg.guild.id].dispatcher.setVolume(servers[msg.guild.id].volume / 100);
 
-            const finish = async (servers, msg) => {
-                servers[msg.guild.id].dispatcher.on('finish', () => {
+            const finish = async (servers: ToolsTypes.Servers, msg: ToolsTypes.Message) => {
+                servers[msg.guild.id].dispatcher.on('finish', async () => {
                     servers[msg.guild.id].fila.delete(playing.title);
                     servers[msg.guild.id].playingNow = false;
                     if (servers[msg.guild.id].fila.size > 0) {

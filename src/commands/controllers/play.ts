@@ -9,8 +9,8 @@ import Ytm from 'youtube-music-api';
 const api = new Ytm();
 api.initalize();
 
-class Play {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         let whatToPlay = msg.content.slice(4);
 
         if (whatToPlay.length === 0 || whatToPlay === '') {
@@ -73,5 +73,3 @@ class Play {
         }
     }
 }
-
-export const play = new Play();
