@@ -1,9 +1,9 @@
 import tools from '../../tools';
 
-import { queue } from './queue';
+import queue from './queue';
 
-class SelectInQueue {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message, selected: CommandsTypes.Selected) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message, selected: CommandsTypes.Selected) => {
         let i = 1;
         let removeQueue = [];
 
@@ -26,5 +26,3 @@ class SelectInQueue {
         tools.playMusic(servers, msg);
     }
 }
-
-export const selectInQueue = new SelectInQueue();

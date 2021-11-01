@@ -38,6 +38,8 @@ export class PlayMusic {
 
             const finish = async (servers: ToolsTypes.Servers, msg: ToolsTypes.Message) => {
                 servers[msg.guild.id].dispatcher.on('finish', async () => {
+                    servers[msg.guild.id].dispatcher.destroy();
+
                     servers[msg.guild.id].fila.delete(playing.title);
                     servers[msg.guild.id].playingNow = false;
                     if (servers[msg.guild.id].fila.size > 0) {

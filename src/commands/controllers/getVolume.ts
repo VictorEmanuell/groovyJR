@@ -1,7 +1,7 @@
 import utils from '../../utils';
 
-class GetVolume {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         if (servers[msg.guild.id].playingNow) {
             let volume = await servers[msg.guild.id].dispatcher.volume;
             msg.channel.send(await utils.embed_1('Ajustes', `O volume atual é: ${volume * 100}`));
@@ -10,5 +10,3 @@ class GetVolume {
         }
     }
 }
-
-export const getVolume = new GetVolume();

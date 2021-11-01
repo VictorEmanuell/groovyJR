@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
 
-class Help {
-    async execute(msg: CommandsTypes.Message) {
+export default {
+    execute: async (msg: CommandsTypes.Message) => {
         const embed = new Discord.MessageEmbed()
             .setColor([111, 20, 113])
             .setAuthor('GroovyJR')
@@ -24,5 +24,3 @@ class Help {
         msg.channel.send(await embed);
     }
 }
-
-export const help = new Help();

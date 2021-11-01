@@ -2,11 +2,11 @@ import Discord from 'discord.js';
 
 import tools from '../../tools';
 
-import { stop } from './stop';
-import { queue } from './queue';
+import stop from './stop';
+import queue from './queue';
 
-class Random {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         let random = [];
 
         let queueShuffle = servers[msg.guild.id].fila
@@ -59,5 +59,3 @@ class Random {
         queue.execute(servers, msg);
     }
 }
-
-export const random = new Random();

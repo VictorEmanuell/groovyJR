@@ -1,17 +1,17 @@
-import { play } from "./controllers/play";
-import { search } from "./controllers/search";
-import { join } from "./controllers/join";
-import { leave } from "./controllers/leave";
-import { stop } from "./controllers/stop";
-import { resume } from "./controllers/resume";
-import { skip } from "./controllers/skip";
-import { getVolume } from "./controllers/getVolume";
-import { setVolume } from "./controllers/setVolume";
-import { queue } from "./controllers/queue";
-import { selectInQueue } from "./controllers/selectInQueue";
-import { clearQueue } from "./controllers/clearQueue";
-import { random } from "./controllers/random";
-import { filter } from "./controllers/filter";
+import play from "./controllers/play";
+import search from "./controllers/search";
+import join from "./controllers/join";
+import leave from "./controllers/leave";
+import stop from "./controllers/stop";
+import resume from "./controllers/resume";
+import skip from "./controllers/skip";
+import getVolume from "./controllers/getVolume";
+import setVolume from "./controllers/setVolume";
+import queue from "./controllers/queue";
+import selectInQueue from "./controllers/selectInQueue";
+import clearQueue from "./controllers/clearQueue";
+import random from "./controllers/random";
+import filter from "./controllers/filter";
 
 const prefixo = process.env.PREFIX;
 

@@ -2,13 +2,17 @@
 // Local types
 //////////////////////////////////////////////////////////////////////////////////////
 
-interface ServerObject {
-    connection: null | object;
-    dispatcher: null | object;
-    fila: object;
-    playingNow: boolean;
-    volume: number;
-    filter: string[];
+declare namespace LocalTypes {
+    import Discord from 'discord.js';
+
+    interface ServerObject {
+        connection: null | Discord.VoiceConnection;
+        dispatcher: null | Discord.StreamDispatcher;
+        fila: object;
+        playingNow: boolean;
+        volume: number;
+        filter: string[];
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +20,7 @@ interface ServerObject {
 //////////////////////////////////////////////////////////////////////////////////////
 
 declare namespace IndexTypes {
-    type Servers = undefined | ServerObject[];
+    type Servers = undefined | LocalTypes.ServerObject[];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +31,8 @@ declare namespace ToolsTypes {
     import Discord from 'discord.js';
 
     type DiscordClient = Discord.Client;
-    type Servers = undefined | ServerObject[];
-    type Message = undefined | Discord.Message;
+    type Servers = LocalTypes.ServerObject[];
+    type Message = Discord.Message;
 
     interface YtdlOptions {
         opusEncoded: boolean;
@@ -61,8 +65,8 @@ declare namespace UtilsTypes {
 declare namespace CommandsTypes {
     import Discord from 'discord.js';
 
-    type Servers = undefined | ServerObject[];
-    type Message = undefined | Discord.Message;
-    type VoiceState = undefined | Discord.VoiceState;
+    type Servers = LocalTypes.ServerObject[];
+    type Message = Discord.Message;
+    type VoiceState = Discord.VoiceState;
     type Selected = number;
 }

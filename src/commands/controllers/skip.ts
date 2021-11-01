@@ -1,10 +1,10 @@
 import utils from "../../utils";
 import tools from '../../tools';
 
-import { leave } from './leave';
+import leave from './leave';
 
-class Skip {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         if (!msg.member.voice.channel) {
             msg.channel.send(await utils.embed_1('Entre em um canal de voz misera!', ''));
             return;
@@ -21,5 +21,3 @@ class Skip {
         }
     }
 }
-
-export const skip = new Skip();

@@ -9,8 +9,8 @@ import Ytm from 'youtube-music-api';
 const api = new Ytm();
 api.initalize();
 
-class Search {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         let whatToPlay = msg.content.slice(4);
 
         if (whatToPlay.length === 0) {
@@ -118,5 +118,3 @@ class Search {
         }
     }
 }
-
-export const search = new Search();

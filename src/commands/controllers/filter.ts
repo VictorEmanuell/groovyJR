@@ -3,8 +3,8 @@ import Discord from 'discord.js';
 import tools from '../../tools';
 import utils from '../../utils';
 
-class Filter {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         if (!servers[msg.guild.id].connection) {
             return msg.channel.send(await utils.embed_1('Não tá tocando nada!!!!', ''));
         }
@@ -93,5 +93,3 @@ class Filter {
             });
     }
 }
-
-export const filter = new Filter();

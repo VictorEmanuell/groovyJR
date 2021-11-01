@@ -1,5 +1,5 @@
-class Join {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         try {
             servers[msg.guild.id].connection = await msg.member.voice.channel.join();
         }
@@ -9,5 +9,3 @@ class Join {
         }
     }
 }
-
-export const join = new Join();

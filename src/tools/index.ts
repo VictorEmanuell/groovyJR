@@ -1,17 +1,15 @@
 import { Mixin } from 'ts-mixer';
 
-import { Initialize } from './controllers/initialize';
-import { CheckConnection } from './controllers/checkConnection';
+import initialize from './controllers/initialize';
+import checkConnection from './controllers/checkConnection';
+import fetchUserConnection from './controllers/fetchUserConnection';
 import { PlayMusic } from './controllers/playMusic';
-import { FetchUserConnection } from './controllers/fetchUserConnection';
 
-class Tools extends Mixin(Initialize, CheckConnection, PlayMusic, FetchUserConnection) {
-    methods: ToolsTypes.Methods = [
-        'initialize',
-        'checkConnection',
-        'playMusic',
-        'fetchUserConnection'
-    ]
+const playMusic = new PlayMusic().playMusic;
+
+export default {
+    initialize,
+    checkConnection,
+    fetchUserConnection,
+    playMusic
 }
-
-export default new Tools();

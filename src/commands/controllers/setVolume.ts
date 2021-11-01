@@ -1,7 +1,7 @@
 import utils from "../../utils";
 
-class SetVolume {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message, selected: CommandsTypes.Selected) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message, selected: CommandsTypes.Selected) => {
         if (servers[msg.guild.id].playingNow) {
             if (selected <= 500) {
                 servers[msg.guild.id].dispatcher.setVolume(selected / 100);
@@ -15,5 +15,3 @@ class SetVolume {
         }
     }
 }
-
-export const setVolume = new SetVolume();

@@ -1,5 +1,7 @@
-class Leave {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
+        servers[msg.guild.id].dispatcher.destroy();
+
         servers[msg.guild.id].connection = null;
         servers[msg.guild.id].dispatcher = null;
         servers[msg.guild.id].playingNow = false;
@@ -8,5 +10,3 @@ class Leave {
         msg.member.voice.channel.leave();
     }
 }
-
-export const leave = new Leave();

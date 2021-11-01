@@ -1,8 +1,8 @@
 import embedPages from 'easy-embed-pages';
 import utils from '../../utils';
 
-class Queue {
-    async execute(servers: CommandsTypes.Servers, msg: CommandsTypes.Message) {
+export default {
+    execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         if (servers[msg.guild.id].fila.size < 1) {
             msg.channel.send(await utils.embed_1('Nenhuma musica na fila de reprodução!', ''));
             return;
@@ -45,5 +45,3 @@ class Queue {
         embedQueue.start()
     }
 }
-
-export const queue = new Queue();
