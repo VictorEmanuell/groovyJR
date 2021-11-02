@@ -21,20 +21,22 @@ export default {
         await tools.checkConnection(servers, msg);
 
         if (whatToPlay.startsWith('https://open.spotify.com/')) {
+            msg.channel.send(await utils.embed_1('Player', 'Convertendo de Spotify para YouTube...'));
+
             let tracks = await tools.spotifyConverter(whatToPlay);
 
-            console.log(tracks);
+            tracks.forEach(track => {
+                servers[msg.guild.id].fila.set(track.title, {
+                    id: track.id,
+                    title: track.title,
+                    channel: track.channel,
+                    thumb: track.thumb
+                });
+            });
 
-            // tracks.forEach(track => {
-            //     servers[msg.guild.id].fila.set(track.title, {
-            //         id: track.id,
-            //         title: track.title,
-            //         channel: track.channel,
-            //         thumb: track.thumb
-            //     });
-            // });
+            msg.channel.send(await utils.embed_1('Player', 'Sucesso!'));
 
-            // tools.playMusic(servers, msg);
+            tools.playMusic(servers, msg);
 
             return;
         }
