@@ -20,6 +20,25 @@ export default {
 
         await tools.checkConnection(servers, msg);
 
+        if (whatToPlay.startsWith('https://open.spotify.com/')) {
+            let tracks = await tools.spotifyConverter(whatToPlay);
+
+            console.log(tracks);
+
+            // tracks.forEach(track => {
+            //     servers[msg.guild.id].fila.set(track.title, {
+            //         id: track.id,
+            //         title: track.title,
+            //         channel: track.channel,
+            //         thumb: track.thumb
+            //     });
+            // });
+
+            // tools.playMusic(servers, msg);
+
+            return;
+        }
+
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);
 
@@ -69,7 +88,6 @@ export default {
                     msg.channel.send(await embed);
                 }
             })
-
         }
     }
 }

@@ -46,6 +46,15 @@ declare namespace ToolsTypes {
         'playMusic',
         'fetchUserConnection'
     ]
+
+    interface ITracks {
+        id: string;
+        title: string;
+        channel: string;
+        thumb: string;
+    }
+
+    type Tracks = ITracks[];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

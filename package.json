@@ -18,6 +18,7 @@
     "dotenv": "^10.0.0",
     "easy-embed-pages": "0.0.3",
     "ffmpeg-static": "^4.3.0",
+    "spotify-url-info": "^2.2.3",
     "ts-mixer": "^6.0.0",
     "ws": "^8.2.3",
     "youtube-music-api": "^1.0.6",
