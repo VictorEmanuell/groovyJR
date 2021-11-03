@@ -13,11 +13,33 @@ export default {
     execute: async (servers: CommandsTypes.Servers, msg: CommandsTypes.Message) => {
         let whatToPlay = msg.content.slice(4);
 
-        if (whatToPlay.length === 0) {
+        if (whatToPlay.length === 0 || whatToPlay === '') {
             msg.channel.send(await utils.embed_1('Digita algo misera!', ''));
+            return;
         }
 
         await tools.checkConnection(servers, msg);
+
+        if (whatToPlay.startsWith('https://open.spotify.com/')) {
+            msg.channel.send(await utils.embed_1('Spotify Converter', 'Convertendo de Spotify para YouTube...'));
+
+            let tracks = await tools.spotifyConverter(whatToPlay);
+
+            tracks.forEach(track => {
+                servers[msg.guild.id].fila.set(track.title, {
+                    id: track.id,
+                    title: track.title,
+                    channel: track.channel,
+                    thumb: track.thumb
+                });
+            });
+
+            msg.channel.send(await utils.embed_1('Spotify Converter', 'Sucesso!'));
+
+            tools.playMusic(servers, msg);
+
+            return;
+        }
 
         if (ytpl.validateID(whatToPlay)) {
             let playList = await ytpl(whatToPlay);

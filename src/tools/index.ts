@@ -1,5 +1,3 @@
-import { Mixin } from 'ts-mixer';
-
 import initialize from './controllers/initialize';
 import checkConnection from './controllers/checkConnection';
 import fetchUserConnection from './controllers/fetchUserConnection';

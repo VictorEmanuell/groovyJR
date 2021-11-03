@@ -21,7 +21,7 @@ export default {
         await tools.checkConnection(servers, msg);
 
         if (whatToPlay.startsWith('https://open.spotify.com/')) {
-            msg.channel.send(await utils.embed_1('Player', 'Convertendo de Spotify para YouTube...'));
+            msg.channel.send(await utils.embed_1('Spotify Converter', 'Convertendo de Spotify para YouTube...'));
 
             let tracks = await tools.spotifyConverter(whatToPlay);
 
@@ -34,7 +34,7 @@ export default {
                 });
             });
 
-            msg.channel.send(await utils.embed_1('Player', 'Sucesso!'));
+            msg.channel.send(await utils.embed_1('Spotify Converter', 'Sucesso!'));
 
             tools.playMusic(servers, msg);
 
