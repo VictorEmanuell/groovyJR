@@ -23,22 +23,27 @@ export default {
         if (whatToPlay.startsWith('https://open.spotify.com/')) {
             msg.channel.send(await utils.embed_1('Spotify Converter', 'Convertendo de Spotify para YouTube...'));
 
-            let tracks = await tools.spotifyConverter(whatToPlay);
+            let tracks: any = await tools.spotifyConverter(whatToPlay);
 
-            tracks.forEach(track => {
-                servers[msg.guild.id].fila.set(track.title, {
-                    id: track.id,
-                    title: track.title,
-                    channel: track.channel,
-                    thumb: track.thumb
+            if (!tracks.error) {
+                tracks.forEach(track => {
+                    servers[msg.guild.id].fila.set(track.title, {
+                        id: track.id,
+                        title: track.title,
+                        channel: track.channel,
+                        thumb: track.thumb
+                    });
                 });
-            });
 
-            msg.channel.send(await utils.embed_1('Spotify Converter', 'Sucesso!'));
+                msg.channel.send(await utils.embed_1('Spotify Converter', 'Sucesso!'));
 
-            tools.playMusic(servers, msg);
+                tools.playMusic(servers, msg);
 
-            return;
+                return;
+            } else {
+                console.log(tracks.error);
+                msg.channel.send(await utils.embed_1('Spotify Converter', 'Ocorreu um erro na conversão.'));
+            }
         }
 
         if (ytpl.validateID(whatToPlay)) {
